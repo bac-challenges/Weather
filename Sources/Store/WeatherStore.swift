@@ -70,7 +70,8 @@ extension WeatherStore {
 
 // MARK: - Network
 extension WeatherStore {
-	
+
+	typealias FetchResult = Result<WeatherGroup, ServiceError>
 	typealias SearchResult = Result<Weather, ServiceError>
 	typealias SearchCompletion = (SearchResult) -> Void
 	
@@ -91,7 +92,7 @@ extension WeatherStore {
 	}
 	
 	func fetch() {
-		service.fetch(endpoint: WeatherEndPoint.group(id: locationsString)) { (result: Result<WeatherGroup, ServiceError>) in
+		service.fetch(endpoint: WeatherEndPoint.group(id: locationsString)) { (result: FetchResult) in
 			switch result {
 			case .success(let group):
 				self.items = group.list.map { item in

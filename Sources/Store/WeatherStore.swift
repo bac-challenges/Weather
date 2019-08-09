@@ -32,12 +32,13 @@
 import Foundation
 
 class WeatherStore: NSObject {
+
+	@objc dynamic var items: [WeatherViewModel] = []
 	
 	private let locationsKey = "locations"
 	
-	@objc dynamic var items: [WeatherViewModel] = []
-	
 	private let service = Service()
+	
 	private var locations: Set<String> = [] {
 		didSet {
 			save()
@@ -70,13 +71,21 @@ extension WeatherStore {
 // MARK: - Network
 extension WeatherStore {
 	
-	func search(query: String) {
-		service.fetch(endpoint: WeatherEndPoint.search(city: query)) { (result: Result<Weather, ServiceError>) in
+	typealias SearchResult = Result<Weather, ServiceError>
+	typealias SearchCompletion = (SearchResult) -> Void
+	
+	func search(query: String, _ completion: @escaping SearchCompletion) {
+		service.fetch(endpoint: WeatherEndPoint.search(city: query)) { [unowned self] (result: SearchResult) in
 			switch result {
 			case .success(let weather):
-				self.locations.insert("\(weather.id)")
-				self.fetch()
-			case .failure(let error): print(error)
+				let item = self.locations.insert("\(weather.id)")
+				if item.inserted {
+					var items = self.items
+					items.append(WeatherViewModel(source: weather))
+					self.items = items.sorted { $0.name < $1.name }
+					completion(result)
+				}
+			case .failure: completion(result)
 			}
 		}
 	}

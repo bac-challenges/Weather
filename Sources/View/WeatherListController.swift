@@ -40,6 +40,8 @@ class WeatherListController: UITableViewController {
 		let textField = UITextField(frame: CGRect(x: 0, y: 0, width: 500, height: 21))
 		textField.borderStyle = .roundedRect
 		textField.clearButtonMode = .always
+		textField.placeholder = "Enter location..."
+		textField.addTarget(self, action: #selector(addLocation), for: .primaryActionTriggered)
 		return textField
 	}()
 	
@@ -66,7 +68,14 @@ class WeatherListController: UITableViewController {
 // MARK: - Actions
 extension WeatherListController {
 	@objc func addLocation() {
-		store.search(query: searchField.text ?? "")
+		if let text = searchField.text {
+			store.search(query: text) { [unowned self] result in
+				switch result {
+				case .success(let weather): self.show(message: "\(weather.name) added")
+				case .failure(let error): self.show(message: "Location \(error)")
+				}
+			}
+		}
 	}
 }
 
@@ -109,5 +118,16 @@ extension WeatherListController {
 		}
 		cell.configure(store.items[indexPath.row])
 		return cell
+	}
+}
+
+// MARK: - Util
+extension WeatherListController {
+	private func show(message: String) {
+		DispatchQueue.main.sync {
+			let alert = UIAlertController(title: message, message: "", preferredStyle: .alert)
+			alert.addAction(.init(title: "OK", style: .cancel, handler: nil))
+			self.present(alert, animated: true, completion: nil)
+		}
 	}
 }

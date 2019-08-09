@@ -20,7 +20,7 @@
 //	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //	SOFTWARE.
 //
-//	ID: 3849039C-2996-4CE0-B52C-A9DE3B27ACA6
+//	ID: 4CE83B1C-359E-4719-8CE0-E742AD8BAE31
 //
 //	Pkg: Weather
 //
@@ -29,24 +29,15 @@
 //	MacOS: 10.15
 //
 
-import UIKit
+import Foundation
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+@objc class WeatherViewModel: NSObject {
 	
-	var window: UIWindow?
+	let name: String
+	let temp: String
 	
-	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-		
-		window = UIWindow(frame: UIScreen.main.bounds)
-		window?.rootViewController = rootViewController
-		window?.makeKeyAndVisible()
-		
-		return true
-	}
-	
-	private var rootViewController: UINavigationController {
-		let listController = WeatherListController()
-		return UINavigationController(rootViewController: listController)
+	init(source: Weather) {
+		self.name = source.name
+		self.temp = "\(Int(source.main.temp))°"
 	}
 }

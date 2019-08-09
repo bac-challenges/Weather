@@ -20,7 +20,7 @@
 //	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //	SOFTWARE.
 //
-//	ID: 3849039C-2996-4CE0-B52C-A9DE3B27ACA6
+//	ID: 5FB4D009-30D9-4D72-8B33-C33EDA9002AD
 //
 //	Pkg: Weather
 //
@@ -29,24 +29,9 @@
 //	MacOS: 10.15
 //
 
-import UIKit
+import Foundation
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-	
-	var window: UIWindow?
-	
-	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-		
-		window = UIWindow(frame: UIScreen.main.bounds)
-		window?.rootViewController = rootViewController
-		window?.makeKeyAndVisible()
-		
-		return true
-	}
-	
-	private var rootViewController: UINavigationController {
-		let listController = WeatherListController()
-		return UINavigationController(rootViewController: listController)
-	}
+public protocol Configurable {
+	associatedtype T
+	func configure(_ item: T)
 }

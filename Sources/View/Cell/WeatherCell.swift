@@ -20,7 +20,7 @@
 //	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //	SOFTWARE.
 //
-//	ID: 3849039C-2996-4CE0-B52C-A9DE3B27ACA6
+//	ID: 28D54903-907A-486F-A6FA-30C931D0FD63
 //
 //	Pkg: Weather
 //
@@ -31,22 +31,21 @@
 
 import UIKit
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-	
-	var window: UIWindow?
-	
-	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-		
-		window = UIWindow(frame: UIScreen.main.bounds)
-		window?.rootViewController = rootViewController
-		window?.makeKeyAndVisible()
-		
-		return true
+class WeatherCell: UITableViewCell, ReusableCell {
+	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+		super.init(style: .value1, reuseIdentifier: nil)
 	}
 	
-	private var rootViewController: UINavigationController {
-		let listController = WeatherListController()
-		return UINavigationController(rootViewController: listController)
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
+	}
+}
+
+// MARK: - Configurable
+extension WeatherCell: Configurable {
+	func configure(_ item: WeatherViewModel) {
+		accessoryType = .disclosureIndicator
+		textLabel?.text = item.name
+		detailTextLabel?.text = item.temp
 	}
 }

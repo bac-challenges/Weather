@@ -32,7 +32,40 @@
 import UIKit
 
 class WeatherDetailController: UIViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
+	
+	var item: WeatherViewModel?
+	
+	private lazy var textLabel: UILabel = {
+		let label = UILabel()
+		label.text = "N/A"
+		label.textAlignment = .center
+		label.textColor = .lightGray
+		label.font = .systemFont(ofSize: 128, weight: .thin)
+		return label
+	}()
+	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		setupView()
+	}
+}
+
+// MARK: - UI
+extension WeatherDetailController {
+	private func setupView() {
+		
+		view.backgroundColor = .white
+		
+		//
+		if let item = item {
+			title = item.name
+		
+			view.addSubview(textLabel)
+			textLabel.text = item.temp
+			textLabel.layout {
+				$0.centerX == view.centerXAnchor
+				$0.centerY == view.centerYAnchor
+			}
+		}
+	}
 }

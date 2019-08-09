@@ -32,6 +32,17 @@
 import UIKit
 
 class WeatherListController: UITableViewController {
+	
+	let store = WeatherStore()
+	var observer: NSKeyValueObservation?
+	
+	private lazy var searchField: UITextField = {
+		let textField = UITextField(frame: CGRect(x: 0, y: 0, width: 500, height: 21))
+		textField.borderStyle = .roundedRect
+		textField.clearButtonMode = .always
+		return textField
+	}()
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		setupView()
@@ -39,15 +50,35 @@ class WeatherListController: UITableViewController {
 	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
-		clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
+		
+		// Add KVO
+		observer = store.observe(\WeatherStore.items) { [unowned self] (items, change) in
+			DispatchQueue.main.sync {
+				self.tableView.reloadData()
+			}
+		}
+		
+		// Fetch data
+		store.fetch()
+	}
+}
+
+// MARK: - Actions
+extension WeatherListController {
+	@objc func addLocation() {
+		store.search(query: searchField.text ?? "")
 	}
 }
 
 // MARK: - UI
 extension WeatherListController {
 	private func setupView() {
-		title = "Weather"
-		tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+		navigationItem.titleView = searchField
+		navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add,
+															target: self,
+															action: #selector(addLocation))
+			
+		tableView.register(WeatherCell.self, forCellReuseIdentifier: WeatherCell.identifier)
 		tableView.backgroundColor = .white
 		tableView.rowHeight = 80
 	}
@@ -55,7 +86,11 @@ extension WeatherListController {
 
 // MARK: - UITableViewDelegate
 extension WeatherListController {
-	
+	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		let child = WeatherDetailController()
+		child.item = store.items[indexPath.row]
+		self.navigationController?.pushViewController(child, animated: true)
+	}
 }
 
 // MARK: - UITableViewDataSource
@@ -65,12 +100,14 @@ extension WeatherListController {
 	}
 	
 	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return 10
+		return store.items.count
 	}
 	
 	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-		cell.textLabel?.text = "Boom!!!"
+		guard let cell = tableView.dequeueReusableCell(withIdentifier: WeatherCell.identifier, for: indexPath) as? WeatherCell else {
+			return UITableViewCell()
+		}
+		cell.configure(store.items[indexPath.row])
 		return cell
 	}
 }

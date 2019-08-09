@@ -20,7 +20,7 @@
 //	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //	SOFTWARE.
 //
-//	ID: 3849039C-2996-4CE0-B52C-A9DE3B27ACA6
+//	ID: 037ED222-D0AC-464C-8EC9-9A91E366CE60
 //
 //	Pkg: Weather
 //
@@ -31,22 +31,13 @@
 
 import UIKit
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-	
-	var window: UIWindow?
-	
-	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-		
-		window = UIWindow(frame: UIScreen.main.bounds)
-		window?.rootViewController = rootViewController
-		window?.makeKeyAndVisible()
-		
-		return true
+class SearchField: UIView {
+	override init(frame: CGRect = CGRect.zero) {
+		super.init(frame: frame)
+		self.backgroundColor = .red
 	}
 	
-	private var rootViewController: UINavigationController {
-		let listController = WeatherListController()
-		return UINavigationController(rootViewController: listController)
+	required init(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
 	}
 }

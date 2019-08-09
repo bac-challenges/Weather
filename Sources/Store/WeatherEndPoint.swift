@@ -20,7 +20,7 @@
 //	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //	SOFTWARE.
 //
-//	ID: 3849039C-2996-4CE0-B52C-A9DE3B27ACA6
+//	ID: DC30E41D-41D8-4B07-920B-5630AD73ADB8
 //
 //	Pkg: Weather
 //
@@ -29,26 +29,39 @@
 //	MacOS: 10.15
 //
 
-import UIKit
+import Foundation
 
-class WeatherController: UISplitViewController {
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		setupView()
+enum WeatherEndPoint: EndPoint {
+	
+	case search(city: String)
+	case group(id: String)
+	
+	var baseURL: URL {
+		return URL(string: "https://api.openweathermap.org/data/2.5")!
 	}
-}
-
-// MARK: - UI
-extension WeatherController {
-	private func setupView() {
-		preferredDisplayMode = .allVisible
-		delegate = self
+	
+	var path: String {
+		switch self {
+		case .search: return "weather"
+		case .group: return "group"
+		}
 	}
-}
-
-// MARK: - UISplitViewControllerDelegate
-extension WeatherController: UISplitViewControllerDelegate {
-	func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
-		return true
+	
+	var params: [String: String] {
+		
+		var params = ["appid":"6e63cfdb34ebbe020b74729b22c24791", "units":"metric"]
+		
+		switch self {
+		case .search(let city): params["q"] = city
+		case .group(let id): params["id"] = id
+		}
+		
+		return params
+	}
+	
+	var httpMethod: HTTPMethod {
+		switch self {
+		default: return .GET
+		}
 	}
 }

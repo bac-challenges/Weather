@@ -1,6 +1,6 @@
 //	MIT License
 //
-//	Copyright © 2019 Emile, Blue Ant Corp
+//	Copyright © 2020 Emile, Blue Ant Corp
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy
 //	of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 //	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //	SOFTWARE.
 //
-//	ID: DC30E41D-41D8-4B07-920B-5630AD73ADB8
+//	ID: 1CE01B66-1C24-4BF2-81CF-02B9DD549C2C
 //
 //	Pkg: Weather
 //
@@ -31,40 +31,15 @@
 
 import Foundation
 
-enum WeatherEndPoint: EndPoint {
+struct ForecastViewModel {
 	
-	case search(city: String)
-	case group(id: String)
-	case forecast(city: String)
+	let temp: String
+	let date: String
 	
-	var baseURL: URL {
-		return URL(string: "https://api.openweathermap.org/data/2.5")!
-	}
-	
-	var path: String {
-		switch self {
-		case .search: return "weather"
-		case .group: return "group"
-		case .forecast: return "forecast"
-		}
-	}
-	
-	var params: [String: String] {
+	init(source: Forecast) {
+		self.temp = "\(Int(source.main.temp))°"
 		
-		var params = ["appid":"6e63cfdb34ebbe020b74729b22c24791", "units":"metric"]
-		
-		switch self {
-		case .search(let city): params["q"] = city
-		case .group(let id): params["id"] = id
-		case .forecast(let city): params["q"] = city
-		}
-		
-		return params
-	}
-	
-	var httpMethod: HTTPMethod {
-		switch self {
-		default: return .GET
-		}
+		let timeInterval = Double(source.date)
+		self.date = Date(timeIntervalSince1970: timeInterval).toString(format: .custom("MMM dd HH:MM"))
 	}
 }

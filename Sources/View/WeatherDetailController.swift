@@ -31,22 +31,29 @@
 
 import UIKit
 
-class WeatherDetailController: UIViewController {
+class WeatherDetailController: UITableViewController {
 	
+	let store = WeatherStore()
 	var item: WeatherViewModel?
-	
-	private lazy var textLabel: UILabel = {
-		let label = UILabel()
-		label.text = "N/A"
-		label.textAlignment = .center
-		label.textColor = .lightGray
-		label.font = .systemFont(ofSize: 128, weight: .thin)
-		return label
-	}()
+	var items = [ForecastViewModel]()
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		setupView()
+	}
+	
+	override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
+		
+		if let item = item {
+			store.fetchForecast(query: item.name) { [unowned self] (items) in
+				self.items = items
+				
+				DispatchQueue.main.sync {
+					self.tableView.reloadData()
+				}
+			}
+		}
 	}
 }
 
@@ -54,18 +61,33 @@ class WeatherDetailController: UIViewController {
 extension WeatherDetailController {
 	private func setupView() {
 		
-		view.backgroundColor = .white
+		tableView.register(ForecastCell.self, forCellReuseIdentifier: ForecastCell.identifier)
+		tableView.backgroundColor = .white
+		tableView.allowsSelection = false
+		tableView.rowHeight = 80
 		
 		//
 		if let item = item {
 			title = item.name
-		
-			view.addSubview(textLabel)
-			textLabel.text = item.temp
-			textLabel.layout {
-				$0.centerX == view.centerXAnchor
-				$0.centerY == view.centerYAnchor
-			}
 		}
+	}
+}
+
+// MARK: - UITableViewDataSource
+extension WeatherDetailController {
+	override func numberOfSections(in tableView: UITableView) -> Int {
+		return 1
+	}
+	
+	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+		return items.count
+	}
+	
+	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+		guard let cell = tableView.dequeueReusableCell(withIdentifier: ForecastCell.identifier, for: indexPath) as? ForecastCell else {
+			return UITableViewCell()
+		}
+		cell.configure(items[indexPath.row])
+		return cell
 	}
 }

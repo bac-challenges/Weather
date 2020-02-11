@@ -1,6 +1,6 @@
 //	MIT License
 //
-//	Copyright © 2019 Emile, Blue Ant Corp
+//	Copyright © 2020 Emile, Blue Ant Corp
 //
 //	Permission is hereby granted, free of charge, to any person obtaining a copy
 //	of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 //	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //	SOFTWARE.
 //
-//	ID: DC30E41D-41D8-4B07-920B-5630AD73ADB8
+//	ID: 5ED509B1-0013-42F2-BEDB-7D9FC3E85814
 //
 //	Pkg: Weather
 //
@@ -29,42 +29,22 @@
 //	MacOS: 10.15
 //
 
-import Foundation
+import UIKit
 
-enum WeatherEndPoint: EndPoint {
-	
-	case search(city: String)
-	case group(id: String)
-	case forecast(city: String)
-	
-	var baseURL: URL {
-		return URL(string: "https://api.openweathermap.org/data/2.5")!
+class ForecastCell: UITableViewCell, ReusableCell {
+	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+		super.init(style: .value1, reuseIdentifier: nil)
 	}
 	
-	var path: String {
-		switch self {
-		case .search: return "weather"
-		case .group: return "group"
-		case .forecast: return "forecast"
-		}
+	required init?(coder: NSCoder) {
+		fatalError("init(coder:) has not been implemented")
 	}
-	
-	var params: [String: String] {
-		
-		var params = ["appid":"6e63cfdb34ebbe020b74729b22c24791", "units":"metric"]
-		
-		switch self {
-		case .search(let city): params["q"] = city
-		case .group(let id): params["id"] = id
-		case .forecast(let city): params["q"] = city
-		}
-		
-		return params
-	}
-	
-	var httpMethod: HTTPMethod {
-		switch self {
-		default: return .GET
-		}
+}
+
+// MARK: - Configurable
+extension ForecastCell: Configurable {
+	func configure(_ item: ForecastViewModel) {
+		textLabel?.text = String(item.date)
+		detailTextLabel?.text = item.temp
 	}
 }

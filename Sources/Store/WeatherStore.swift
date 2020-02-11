@@ -73,7 +73,9 @@ extension WeatherStore {
 
 	typealias FetchResult = Result<WeatherGroup, ServiceError>
 	typealias SearchResult = Result<Weather, ServiceError>
+	typealias ForecastResult = Result<ForecastGroup, ServiceError>
 	typealias SearchCompletion = (SearchResult) -> Void
+	typealias ForecastCompletion = ([ForecastViewModel]) -> Void
 	
 	func search(query: String, _ completion: @escaping SearchCompletion) {
 		service.fetch(endpoint: WeatherEndPoint.search(city: query)) { [unowned self] (result: SearchResult) in
@@ -99,6 +101,20 @@ extension WeatherStore {
 					WeatherViewModel(source: item)
 				}
 				.sorted { $0.name < $1.name }
+			case .failure(let error): print(error)
+			}
+		}
+	}
+	
+	func fetchForecast(query: String, _ completion: @escaping ForecastCompletion) {
+		service.fetch(endpoint: WeatherEndPoint.forecast(city: query)) { (result: ForecastResult) in
+			switch result {
+			case .success(let forecast):
+				let items = forecast.list.map { item in
+					ForecastViewModel(source: item)
+				}
+				completion(items)
+				
 			case .failure(let error): print(error)
 			}
 		}
